@@ -14,13 +14,18 @@ plugins=(
     archlinux
     kubectl
     kubectx
+    docker
     command-not-found
+    history-substring-search
+    colored-man-pages
+    tmux
     web-search
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-completions
     fzf
 )
+
 
 # Source Oh My Zsh
 source $ZSH/oh-my-zsh.sh
@@ -47,6 +52,7 @@ setopt hist_find_no_dups
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
+autoload -Uz compinit && compinit  # Ensure Zsh autocompletion is initialized
 
 # ====================
 # Keybindings
@@ -56,12 +62,27 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
+bindkey '^[[1;5D' backward-word  # Ctrl + Left Arrow for backward word
+bindkey '^[[1;5C' forward-word   # Ctrl + Right Arrow for forward word
+
+# History substring search plugin keybindings
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+
 # ====================
 # Aliases
 # ====================
 alias ls='ls --color'
 alias vim='nvim'
 alias c='clear'
+alias ..='cd ..'
+alias ll='ls -alF'
+alias gs='git status'
+alias gp='git pull'
+alias gc='git commit -m'
+alias df='df -h'
+
 
 # ====================
 # Path Configuration
