@@ -16,7 +16,6 @@ plugins=(
     kubectx
     command-not-found
     web-search
-    z
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-completions
@@ -105,3 +104,10 @@ function yy() {
     fi
     rm -f -- "$tmp"
 }
+
+
+# ====================
+# Custom Welcome Message
+# ====================
+# Display ASCII banner with 'figlet' and color it using 'lolcat'
+figlet -f ANSI-shadow Aju | lolcat
