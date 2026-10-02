@@ -1,0 +1,39 @@
+# Arch packages — ./install.sh --packages
+# fzf-tab is AUR-only (fzf-tab-git), installed via paru when available.
+
+# Terminal + font
+ghostty
+ttf-jetbrains-mono-nerd
+
+# Shell
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+starship
+atuin
+zoxide
+direnv
+fnm
+
+# Core CLI
+fzf
+fd
+ripgrep
+eza
+bat
+jq
+
+# Git
+git
+git-delta
+lazygit
+github-cli
+
+# Extras (aliased only when installed)
+btop
+dust
+duf
+glow
+jnv
+xh
+yazi

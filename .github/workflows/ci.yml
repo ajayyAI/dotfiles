@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck install.sh scripts/*.sh
+      - name: Configs parse
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+          zsh -n zsh/.zshrc
+          git config -f git/.gitconfig --list >/dev/null
+
+  install:
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      HOME: ${{ github.workspace }}/../fakehome
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install zsh
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+      - name: Seed a pre-existing config (must be backed up, not lost)
+        run: |
+          mkdir -p "$HOME"
+          echo "# old" > "$HOME/.zshrc"
+      - name: Dry run changes nothing
+        run: |
+          ./install.sh --dry-run
+          test ! -L "$HOME/.zshrc"
+      - name: Install
+        run: ./install.sh
+      - name: Verify links, backup, idempotency
+        run: |
+          for f in .zshrc .gitconfig .config/starship.toml .config/ghostty/config; do
+            test -L "$HOME/$f" || { echo "missing link: $f"; exit 1; }
+          done
+          ls "$HOME"/.zshrc.bak-* >/dev/null
+          ./install.sh > rerun.txt
+          ! grep -q 'backup' rerun.txt   # re-run must not back anything up again
+      - name: Shell starts cleanly (no tools installed)
+        run: zsh -i -c 'echo shell-ok' 2>&1 | tee out.txt; ! grep -i 'error\|not found' out.txt
+      - name: Git reads shared + local config
+        run: |
+          git config -f "$HOME/.gitconfig.local" user.name ci
+          test "$(git config --global --includes user.name)" = ci
+          test "$(git config --global pull.rebase)" = true

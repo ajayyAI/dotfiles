@@ -1,6 +1,5 @@
-[user]
-	name = ajay
-	email = example@gmail.com
+# Shared git config. Identity (user.name / user.email) and machine-specific
+# settings live in ~/.gitconfig.local — created by install.sh, never committed.
 [init]
 	defaultBranch = main
 [core]
@@ -45,4 +44,9 @@
 	undo = reset --soft HEAD~1
 	cleanup = !git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 -r git branch -d
 	aliases = config --get-regexp '^alias\\.'
-# GitHub auth: run `gh auth setup-git` on each machine (adds the credential helper)
+
+# Last, so local values override everything above.
+# GitHub credential helper is added there too (don't run `gh auth setup-git` —
+# it would write into this symlinked, tracked file).
+[include]
+	path = ~/.gitconfig.local
